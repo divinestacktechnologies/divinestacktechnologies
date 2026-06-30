@@ -1,0 +1,106 @@
+/* src/styles/Services.css */
+
+/* Page Hero (shared across inner pages) */
+.page-hero {
+  position: relative; z-index: 1;
+  padding: 120px 5vw 60px; text-align: center;
+  background: linear-gradient(180deg, rgba(37,99,235,.08) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(0,212,255,.12);
+}
+.page-hero .section-tag { justify-content: center; }
+.page-hero-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(2rem,5vw,3.2rem); font-weight: 900; line-height: 1.1;
+  margin-bottom: 1rem;
+}
+.page-hero-desc {
+  color: #9CA3AF; font-size: 1.08rem; line-height: 1.8;
+  max-width: 600px; margin: 0 auto;
+}
+
+/* Service blocks */
+.svc-block {
+  display: grid; grid-template-columns: 260px 1fr; gap: 4rem;
+  align-items: start; margin-bottom: 5rem; padding-bottom: 5rem;
+  border-bottom: 1px solid rgba(0,212,255,.1);
+}
+.svc-block:last-child { border: none; margin-bottom: 0; padding-bottom: 0; }
+.svc-block--reverse { direction: rtl; }
+.svc-block--reverse > * { direction: ltr; }
+
+.svc-block-icon-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 1.2rem; }
+.svc-block-icon {
+  width: 90px; height: 90px; border-radius: 20px;
+  background: rgba(37,99,235,.15); border: 1px solid rgba(0,212,255,.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.6rem;
+  box-shadow: 0 0 30px rgba(0,212,255,.15);
+}
+.svc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-size: .7rem; padding: 3px 10px;
+  border: 1px solid rgba(0,212,255,.2);
+  border-radius: 20px; color: #00D4FF;
+}
+
+.svc-block-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.4rem; font-weight: 700; margin-bottom: .8rem;
+}
+.svc-block-desc { color: #9CA3AF; font-size: 1rem; line-height: 1.8; margin-bottom: 1.2rem; }
+
+.svc-features { list-style: none; display: flex; flex-direction: column; gap: .55rem; }
+.svc-features li { display: flex; align-items: center; gap: 10px; font-size: .9rem; color: #D1D5DB; }
+.feat-dot { width: 7px; height: 7px; border-radius: 50%; background: #00D4FF; flex-shrink: 0; }
+
+/* Mini FAQ inside service block */
+.svc-mini-faq {
+  margin-top: 1.2rem;
+  background: rgba(0,212,255,0.05);
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+.svc-mini-faq-q {
+  font-size: 0.85rem; font-weight: 600; color: #00D4FF;
+  margin-bottom: 6px;
+}
+.svc-mini-faq-a {
+  font-size: 0.85rem; color: #9CA3AF; line-height: 1.7;
+}
+
+/* Process steps */
+.process-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem; margin-top: 1rem;
+}
+.process-step { text-align: center; }
+.step-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem; font-weight: 900; color: #00D4FF;
+  margin-bottom: .6rem; line-height: 1;
+}
+.step-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: .9rem; font-weight: 600;
+  margin-bottom: .6rem; color: #fff;
+}
+.step-desc { font-size: .85rem; color: #9CA3AF; line-height: 1.7; }
+
+/* CTA strip */
+.cta-strip {
+  position: relative; z-index: 1;
+  padding: 70px 5vw; text-align: center;
+  background: linear-gradient(135deg, rgba(37,99,235,.12), rgba(0,212,255,.06));
+  border-top: 1px solid rgba(0,212,255,.15);
+}
+.cta-strip h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.4rem,3vw,2rem); font-weight: 700;
+}
+
+@media(max-width:768px) {
+  .svc-block { grid-template-columns: 1fr; gap: 2rem; }
+  .svc-block--reverse { direction: ltr; }
+}

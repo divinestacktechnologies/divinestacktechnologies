@@ -1,0 +1,70 @@
+/* src/styles/FAQ.css */
+.faq-section { }
+
+.faq-accordion {
+  max-width: 760px;
+  margin: 2rem auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.faq-item--open {
+  border-color: var(--cyan);
+  box-shadow: 0 0 24px rgba(0,212,255,0.12);
+}
+
+.faq-q-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: none;
+  border: none;
+  padding: 1.1rem 1.4rem;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--white);
+}
+
+.faq-icon {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; color: var(--cyan);
+  transition: transform 0.25s, background 0.25s;
+}
+.faq-item--open .faq-icon {
+  background: var(--grad);
+  color: #000;
+}
+
+.faq-a-wrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.faq-item--open .faq-a-wrap {
+  max-height: 400px;
+}
+
+.faq-a-text {
+  padding: 0 1.4rem 1.2rem;
+  color: var(--gray);
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
