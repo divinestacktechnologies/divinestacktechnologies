@@ -4,7 +4,7 @@
 
 require('dotenv').config();
 const bcrypt   = require('bcryptjs');
-const mysql    = require('mysql2/promise');
+const { Pool } = require('pg');
 const readline = require('readline');
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -14,29 +14,32 @@ async function main() {
   console.log('\n🚀 Divine Stack Technologies — Admin Setup\n');
   console.log('━'.repeat(45));
 
-  let db;
+  const pool = new Pool({
+    host:     process.env.DB_HOST     || 'localhost',
+    port:     process.env.DB_PORT     || 5432,
+    user:     process.env.DB_USER     || 'postgres',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME     || 'divine_stack_db',
+    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+  });
+
   try {
-    db = await mysql.createConnection({
-      host:     process.env.DB_HOST     || 'localhost',
-      port:     process.env.DB_PORT     || 3306,
-      user:     process.env.DB_USER     || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME     || 'divine_stack_db',
-    });
-    console.log('✅ MySQL connected\n');
+    await pool.query('SELECT 1');
+    console.log('✅ PostgreSQL connected\n');
   } catch (err) {
-    console.error('❌ MySQL connect failed:', err.message);
-    console.error('   → Make sure MySQL is running and .env is configured');
+    console.error('❌ PostgreSQL connect failed:', err.message);
+    console.error('   → Make sure PostgreSQL is running and .env is configured');
     process.exit(1);
   }
 
   // Check existing admins
-  const [existing] = await db.execute('SELECT COUNT(*) AS c FROM admin_users');
-  if (existing[0].c > 0) {
-    const cont = await ask(`⚠️  ${existing[0].c} admin(s) already exist. Add another? (y/n): `);
+  const existing = await pool.query('SELECT COUNT(*) AS c FROM admin_users');
+  const existingCount = parseInt(existing.rows[0].c, 10);
+  if (existingCount > 0) {
+    const cont = await ask(`⚠️  ${existingCount} admin(s) already exist. Add another? (y/n): `);
     if (cont.trim().toLowerCase() !== 'y') {
       console.log('\nCancelled. Existing admins untouched.\n');
-      rl.close(); db.end(); return;
+      rl.close(); await pool.end(); return;
     }
   }
 
@@ -64,7 +67,7 @@ async function main() {
   // Validate
   if (!full_name || !username || !email) {
     console.error('\n❌ Name, username and email are required.\n');
-    rl.close(); db.end(); return;
+    rl.close(); await pool.end(); return;
   }
 
   // Hash password with bcrypt (salt rounds: 12)
@@ -72,15 +75,15 @@ async function main() {
   const password_hash = await bcrypt.hash(password, 12);
 
   try {
-    const [result] = await db.execute(
+    const result = await pool.query(
       `INSERT INTO admin_users (username, email, full_name, phone, password_hash, role)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
       [username, email, full_name, phone, password_hash, role]
     );
 
     console.log('\n' + '━'.repeat(45));
     console.log('✅ Admin created successfully!\n');
-    console.log(`   ID       : ${result.insertId}`);
+    console.log(`   ID       : ${result.rows[0].id}`);
     console.log(`   Name     : ${full_name}`);
     console.log(`   Username : ${username}`);
     console.log(`   Email    : ${email}`);
@@ -89,7 +92,7 @@ async function main() {
     console.log('\n' + '━'.repeat(45));
     console.log('👉 Now login at: http://localhost:3000/admin\n');
   } catch (err) {
-    if (err.code === 'ER_DUP_ENTRY') {
+    if (err.code === '23505') { // unique_violation
       console.error('\n❌ Username or email already exists.\n');
     } else {
       console.error('\n❌ Error:', err.message, '\n');
@@ -97,7 +100,7 @@ async function main() {
   }
 
   rl.close();
-  await db.end();
+  await pool.end();
 }
 
 main();

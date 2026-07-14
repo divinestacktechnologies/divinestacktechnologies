@@ -1,37 +1,29 @@
+// backend/db.js — PostgreSQL connection pool
 require('dotenv').config();
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 
-const sslConfig = process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false;
-
-const pool = mysql.createPool({
+const pool = new Pool({
   host:               process.env.DB_HOST     || 'localhost',
-  port:               parseInt(process.env.DB_PORT) || 3306,
-  user:               process.env.DB_USER     || 'root',
+  port:               process.env.DB_PORT     || 5432,
+  user:               process.env.DB_USER     || 'postgres',
   password:           process.env.DB_PASSWORD || '',
   database:           process.env.DB_NAME     || 'divine_stack_db',
-  ssl:                sslConfig,
-  waitForConnections: true,
-  connectionLimit:    10,
-  queueLimit:         0,
-  connectTimeout:     30000,
-  timezone:           '+05:30',
+  max:                10,
+  idleTimeoutMillis:  30000,
+  // Most managed Postgres providers (Render, Railway, Aiven, etc.) require SSL.
+  // Set DB_SSL=true in .env when connecting to one of those.
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
 });
 
-async function connectWithRetry(retries = 3) {
-  for (let i = 1; i <= retries; i++) {
-    try {
-      const conn = await pool.getConnection();
-      console.log('✅ MySQL connected successfully');
-      conn.release();
-      return;
-    } catch (err) {
-      console.error(`❌ MySQL connection attempt ${i}/${retries} failed:`, err.message);
-      if (i < retries) {
-        await new Promise(r => setTimeout(r, 3000));
-      }
-    }
-  }
-}
+// Verify connection on startup
+pool.connect()
+  .then(client => {
+    console.log('✅ PostgreSQL connected successfully');
+    client.release();
+  })
+  .catch(err => {
+    console.error('❌ PostgreSQL connection error:', err.message);
+    process.exit(1);
+  });
 
-connectWithRetry();
 module.exports = pool;

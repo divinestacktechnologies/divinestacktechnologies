@@ -1,4 +1,4 @@
-// backend/server.js — Divine Stack Technologies API v2
+// backend/server.js — Divine Stack Technologies API v2 (PostgreSQL)
 // Auth: bcrypt passwords + JWT tokens
 require('dotenv').config();
 const express   = require('express');
@@ -64,20 +64,20 @@ async function requireAuth(req, res, next) {
     const payload = jwt.verify(token, JWT_SECRET);
     // Check blacklist
     try {
-      const [bl] = await db.execute(
-        'SELECT id FROM token_blacklist WHERE token_jti = ?', [payload.jti]
+      const bl = await db.query(
+        'SELECT id FROM token_blacklist WHERE token_jti = $1', [payload.jti]
       );
-      if (bl.length) return res.status(401).json({ success:false, message:'Token revoked. Please login again.' });
+      if (bl.rows.length) return res.status(401).json({ success:false, message:'Token revoked. Please login again.' });
     } catch(_) {}
 
-    const [rows] = await db.execute(
-      'SELECT id, username, email, full_name, phone, role, avatar, is_active FROM admin_users WHERE id = ?',
+    const rows = await db.query(
+      'SELECT id, username, email, full_name, phone, role, avatar, is_active FROM admin_users WHERE id = $1',
       [payload.id]
     );
-    if (!rows.length || !rows[0].is_active) {
+    if (!rows.rows.length || !rows.rows[0].is_active) {
       return res.status(401).json({ success:false, message:'Account not found or disabled' });
     }
-    req.admin = rows[0];
+    req.admin = rows.rows[0];
     next();
   } catch(err) {
     if (err.name === 'TokenExpiredError') {
@@ -117,11 +117,12 @@ app.post('/api/enquiries', publicLimiter,
     const ip = req.ip || req.connection.remoteAddress;
     const ua = req.headers['user-agent'] || null;
     try {
-      const [result] = await db.execute(
-        'INSERT INTO enquiries (source,full_name,email,phone,service,budget,message,ip_address,user_agent) VALUES (?,?,?,?,?,?,?,?,?)',
+      const result = await db.query(
+        `INSERT INTO enquiries (source,full_name,email,phone,service,budget,message,ip_address,user_agent)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`,
         [source, full_name, email, phone, service, budget, message, ip, ua]
       );
-      return res.status(201).json({ success:true, message:'Enquiry submitted! We will contact you within 24 hours.', id: result.insertId });
+      return res.status(201).json({ success:true, message:'Enquiry submitted! We will contact you within 24 hours.', id: result.rows[0].id });
     } catch(err) {
       console.error('POST /enquiries:', err);
       return res.status(500).json({ success:false, message:'Server error. Please try again.' });
@@ -142,14 +143,14 @@ app.post('/api/auth/login', authLimiter,
     const { username, password } = req.body;
     try {
       // Find by username OR email
-      const [rows] = await db.execute(
-        'SELECT * FROM admin_users WHERE (username = ? OR email = ?) AND is_active = 1',
-        [username, username]
+      const rows = await db.query(
+        'SELECT * FROM admin_users WHERE (username = $1 OR email = $1) AND is_active = TRUE',
+        [username]
       );
-      if (!rows.length) {
+      if (!rows.rows.length) {
         return res.status(401).json({ success:false, message:'Invalid username or password' });
       }
-      const admin = rows[0];
+      const admin = rows.rows[0];
 
       // Compare bcrypt
       const valid = await bcrypt.compare(password, admin.password_hash);
@@ -166,7 +167,7 @@ app.post('/api/auth/login', authLimiter,
       );
 
       // Update last_login
-      await db.execute('UPDATE admin_users SET last_login = NOW() WHERE id = ?', [admin.id]);
+      await db.query('UPDATE admin_users SET last_login = NOW() WHERE id = $1', [admin.id]);
 
       return res.json({
         success: true,
@@ -196,8 +197,8 @@ app.post('/api/auth/logout', requireAuth, async (req, res) => {
     const token   = header.slice(7);
     const payload = jwt.decode(token);
     if (payload?.jti) {
-      await db.execute(
-        'INSERT IGNORE INTO token_blacklist (token_jti, expires_at) VALUES (?, ?)',
+      await db.query(
+        'INSERT INTO token_blacklist (token_jti, expires_at) VALUES ($1, $2) ON CONFLICT (token_jti) DO NOTHING',
         [payload.jti, new Date(payload.exp * 1000)]
       );
     }
@@ -222,22 +223,23 @@ app.put('/api/auth/profile', requireAuth,
     const { full_name, email, phone } = req.body;
     const updates = [];
     const params  = [];
-    if (full_name !== undefined) { updates.push('full_name = ?'); params.push(full_name); }
-    if (email     !== undefined) { updates.push('email = ?');     params.push(email); }
-    if (phone     !== undefined) { updates.push('phone = ?');     params.push(phone || null); }
+    let idx = 1;
+    if (full_name !== undefined) { updates.push(`full_name = $${idx++}`); params.push(full_name); }
+    if (email     !== undefined) { updates.push(`email = $${idx++}`);     params.push(email); }
+    if (phone     !== undefined) { updates.push(`phone = $${idx++}`);     params.push(phone || null); }
 
     if (!updates.length) return res.status(400).json({ success:false, message:'Nothing to update' });
 
     params.push(req.admin.id);
     try {
-      await db.execute(`UPDATE admin_users SET ${updates.join(', ')} WHERE id = ?`, params);
-      const [rows] = await db.execute(
-        'SELECT id,username,email,full_name,phone,role,avatar,last_login FROM admin_users WHERE id = ?',
+      await db.query(`UPDATE admin_users SET ${updates.join(', ')} WHERE id = $${idx}`, params);
+      const rows = await db.query(
+        'SELECT id,username,email,full_name,phone,role,avatar,last_login FROM admin_users WHERE id = $1',
         [req.admin.id]
       );
-      return res.json({ success:true, message:'Profile updated', data: rows[0] });
+      return res.json({ success:true, message:'Profile updated', data: rows.rows[0] });
     } catch(err) {
-      if (err.code === 'ER_DUP_ENTRY') return res.status(409).json({ success:false, message:'Email already in use' });
+      if (err.code === '23505') return res.status(409).json({ success:false, message:'Email already in use' });
       return res.status(500).json({ success:false, message:'Server error' });
     }
   }
@@ -257,12 +259,12 @@ app.put('/api/auth/change-password', requireAuth,
     }
 
     try {
-      const [rows] = await db.execute('SELECT password_hash FROM admin_users WHERE id = ?', [req.admin.id]);
-      const valid  = await bcrypt.compare(current_password, rows[0].password_hash);
+      const rows  = await db.query('SELECT password_hash FROM admin_users WHERE id = $1', [req.admin.id]);
+      const valid = await bcrypt.compare(current_password, rows.rows[0].password_hash);
       if (!valid) return res.status(400).json({ success:false, message:'Current password is incorrect' });
 
       const hash = await bcrypt.hash(new_password, 12);
-      await db.execute('UPDATE admin_users SET password_hash = ? WHERE id = ?', [hash, req.admin.id]);
+      await db.query('UPDATE admin_users SET password_hash = $1 WHERE id = $2', [hash, req.admin.id]);
 
       return res.json({ success:true, message:'Password changed successfully' });
     } catch(err) {
@@ -282,24 +284,26 @@ app.get('/api/admin/enquiries', adminLimiter, requireAuth, async (req, res) => {
   const safeSort  = ['id','full_name','email','created_at','status'].includes(sort) ? sort : 'created_at';
   const safeOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
-  let where = []; let params = [];
-  if (status) { where.push('status = ?'); params.push(status); }
-  if (source) { where.push('source = ?'); params.push(source); }
+  let where = []; let params = []; let idx = 1;
+  if (status) { where.push(`status = $${idx++}`); params.push(status); }
+  if (source) { where.push(`source = $${idx++}`); params.push(source); }
   if (search) {
-    where.push('(full_name LIKE ? OR email LIKE ? OR phone LIKE ? OR service LIKE ?)');
-    const s = `%${search}%`; params.push(s,s,s,s);
+    where.push(`(full_name ILIKE $${idx} OR email ILIKE $${idx} OR phone ILIKE $${idx} OR service ILIKE $${idx})`);
+    params.push(`%${search}%`);
+    idx++;
   }
   const wc = where.length ? 'WHERE ' + where.join(' AND ') : '';
 
   try {
-    const [[{total}]] = await db.execute(`SELECT COUNT(*) AS total FROM enquiries ${wc}`, params);
-    const [rows] = await db.execute(
+    const totalResult = await db.query(`SELECT COUNT(*) AS total FROM enquiries ${wc}`, params);
+    const total = parseInt(totalResult.rows[0].total, 10);
+    const rows = await db.query(
       `SELECT id,source,full_name,email,phone,service,budget,message,status,ip_address,created_at,updated_at
        FROM enquiries ${wc} ORDER BY ${safeSort} ${safeOrder}
        LIMIT ${parseInt(limit)} OFFSET ${offset}`,
       params
     );
-    return res.json({ success:true, data:rows, pagination:{ total, page:parseInt(page), limit:parseInt(limit), totalPages: Math.ceil(total/parseInt(limit)) } });
+    return res.json({ success:true, data:rows.rows, pagination:{ total, page:parseInt(page), limit:parseInt(limit), totalPages: Math.ceil(total/parseInt(limit)) } });
   } catch(err) {
     console.error(err);
     return res.status(500).json({ success:false, message:'Server error' });
@@ -309,9 +313,9 @@ app.get('/api/admin/enquiries', adminLimiter, requireAuth, async (req, res) => {
 // GET single enquiry
 app.get('/api/admin/enquiries/:id', adminLimiter, requireAuth, async (req, res) => {
   try {
-    const [rows] = await db.execute('SELECT * FROM enquiries WHERE id = ?', [req.params.id]);
-    if (!rows.length) return res.status(404).json({ success:false, message:'Not found' });
-    return res.json({ success:true, data: rows[0] });
+    const rows = await db.query('SELECT * FROM enquiries WHERE id = $1', [req.params.id]);
+    if (!rows.rows.length) return res.status(404).json({ success:false, message:'Not found' });
+    return res.json({ success:true, data: rows.rows[0] });
   } catch(err) {
     return res.status(500).json({ success:false, message:'Server error' });
   }
@@ -323,7 +327,7 @@ app.patch('/api/admin/enquiries/:id/status', adminLimiter, requireAuth,
   validate,
   async (req, res) => {
     try {
-      await db.execute('UPDATE enquiries SET status = ? WHERE id = ?', [req.body.status, req.params.id]);
+      await db.query('UPDATE enquiries SET status = $1 WHERE id = $2', [req.body.status, req.params.id]);
       return res.json({ success:true, message:'Status updated' });
     } catch(err) {
       return res.status(500).json({ success:false, message:'Server error' });
@@ -334,7 +338,7 @@ app.patch('/api/admin/enquiries/:id/status', adminLimiter, requireAuth,
 // DELETE
 app.delete('/api/admin/enquiries/:id', adminLimiter, requireAuth, async (req, res) => {
   try {
-    await db.execute('DELETE FROM enquiries WHERE id = ?', [req.params.id]);
+    await db.query('DELETE FROM enquiries WHERE id = $1', [req.params.id]);
     return res.json({ success:true, message:'Deleted' });
   } catch(err) {
     return res.status(500).json({ success:false, message:'Server error' });
@@ -344,29 +348,31 @@ app.delete('/api/admin/enquiries/:id', adminLimiter, requireAuth, async (req, re
 // ── Dashboard Stats ────────────────────────────────────────────
 app.get('/api/admin/stats', adminLimiter, requireAuth, async (req, res) => {
   try {
-    const [[totals]] = await db.execute(`
+    const totalsResult = await db.query(`
       SELECT
-        COUNT(*)                              AS total,
-        SUM(status='new')                     AS new_count,
-        SUM(status='in_progress')             AS in_progress,
-        SUM(status='closed')                  AS closed,
-        SUM(source='popup')                   AS from_popup,
-        SUM(source='contact')                 AS from_contact,
-        SUM(DATE(created_at)=CURDATE())       AS today,
-        SUM(YEARWEEK(created_at)=YEARWEEK(NOW())) AS this_week
+        COUNT(*)                                                                   AS total,
+        COUNT(*) FILTER (WHERE status = 'new')                                     AS new_count,
+        COUNT(*) FILTER (WHERE status = 'in_progress')                             AS in_progress,
+        COUNT(*) FILTER (WHERE status = 'closed')                                  AS closed,
+        COUNT(*) FILTER (WHERE source = 'popup')                                   AS from_popup,
+        COUNT(*) FILTER (WHERE source = 'contact')                                 AS from_contact,
+        COUNT(*) FILTER (WHERE DATE(created_at) = CURRENT_DATE)                    AS today,
+        COUNT(*) FILTER (WHERE DATE_TRUNC('week', created_at) = DATE_TRUNC('week', NOW())) AS this_week
       FROM enquiries`);
+    const totals = totalsResult.rows[0];
 
-    const [byService] = await db.execute(`
+    const byServiceResult = await db.query(`
       SELECT service, COUNT(*) AS count FROM enquiries
       WHERE service IS NOT NULL GROUP BY service ORDER BY count DESC LIMIT 10`);
 
-    const [daily] = await db.execute(`
+    const dailyResult = await db.query(`
       SELECT DATE(created_at) AS date, COUNT(*) AS count FROM enquiries
-      WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+      WHERE created_at >= NOW() - INTERVAL '30 days'
       GROUP BY DATE(created_at) ORDER BY date ASC`);
 
-    return res.json({ success:true, data:{ totals, byService, daily } });
+    return res.json({ success:true, data:{ totals, byService: byServiceResult.rows, daily: dailyResult.rows } });
   } catch(err) {
+    console.error(err);
     return res.status(500).json({ success:false, message:'Server error' });
   }
 });
@@ -374,10 +380,10 @@ app.get('/api/admin/stats', adminLimiter, requireAuth, async (req, res) => {
 // ── Admin User Management (super_admin only) ───────────────────
 app.get('/api/admin/users', adminLimiter, requireAuth, requireSuperAdmin, async (req, res) => {
   try {
-    const [rows] = await db.execute(
+    const rows = await db.query(
       'SELECT id,username,email,full_name,phone,role,is_active,last_login,created_at FROM admin_users ORDER BY created_at DESC'
     );
-    return res.json({ success:true, data: rows });
+    return res.json({ success:true, data: rows.rows });
   } catch(err) {
     return res.status(500).json({ success:false, message:'Server error' });
   }
@@ -391,7 +397,7 @@ app.patch('/api/admin/users/:id/status', adminLimiter, requireAuth, requireSuper
       return res.status(400).json({ success:false, message:'Cannot disable your own account' });
     }
     try {
-      await db.execute('UPDATE admin_users SET is_active = ? WHERE id = ?', [req.body.is_active ? 1 : 0, req.params.id]);
+      await db.query('UPDATE admin_users SET is_active = $1 WHERE id = $2', [!!req.body.is_active, req.params.id]);
       return res.json({ success:true, message:'User status updated' });
     } catch(err) {
       return res.status(500).json({ success:false, message:'Server error' });
@@ -414,29 +420,29 @@ app.post('/api/admin/users', adminLimiter, requireAuth, requireSuperAdmin,
     const { full_name, username, email, phone, password, role } = req.body;
     try {
       // Check duplicate username/email
-      const [existing] = await db.execute(
-        'SELECT id FROM admin_users WHERE username = ? OR email = ?',
+      const existing = await db.query(
+        'SELECT id FROM admin_users WHERE username = $1 OR email = $2',
         [username.toLowerCase(), email]
       );
-      if (existing.length) {
+      if (existing.rows.length) {
         return res.status(409).json({ success:false, message:'Username or email already exists' });
       }
 
       const password_hash = await bcrypt.hash(password, 12);
-      const [result] = await db.execute(
+      const result = await db.query(
         `INSERT INTO admin_users (username, email, full_name, phone, password_hash, role)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
         [username.toLowerCase(), email, full_name, phone || null, password_hash, role]
       );
 
-      const [rows] = await db.execute(
-        'SELECT id,username,email,full_name,phone,role,is_active,last_login,created_at FROM admin_users WHERE id = ?',
-        [result.insertId]
+      const rows = await db.query(
+        'SELECT id,username,email,full_name,phone,role,is_active,last_login,created_at FROM admin_users WHERE id = $1',
+        [result.rows[0].id]
       );
 
-      return res.status(201).json({ success:true, message:'Admin user created successfully', data: rows[0] });
+      return res.status(201).json({ success:true, message:'Admin user created successfully', data: rows.rows[0] });
     } catch(err) {
-      if (err.code === 'ER_DUP_ENTRY') {
+      if (err.code === '23505') { // unique_violation
         return res.status(409).json({ success:false, message:'Username or email already exists' });
       }
       console.error('POST /admin/users:', err);
@@ -451,7 +457,7 @@ app.delete('/api/admin/users/:id', adminLimiter, requireAuth, requireSuperAdmin,
     return res.status(400).json({ success:false, message:'Cannot delete your own account' });
   }
   try {
-    await db.execute('DELETE FROM admin_users WHERE id = ?', [req.params.id]);
+    await db.query('DELETE FROM admin_users WHERE id = $1', [req.params.id]);
     return res.json({ success:true, message:'Admin user deleted' });
   } catch(err) {
     return res.status(500).json({ success:false, message:'Server error' });
