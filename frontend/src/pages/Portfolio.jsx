@@ -10,45 +10,52 @@ const shot = (url) => `https://s.wordpress.com/mshots/v1/${encodeURIComponent(ur
 
 const PROJECTS = [
   {
-    cat:'Education', icon:'🏫', name:'Metro School Website',
+    cat:'Education', icon:'🏫', name:'Metro Public School — Website',
     tech:['React','Node.js','Responsive Design'],
-    desc:'Official school website with admissions info, academics overview, faculty details, and an easy-to-navigate parent/student portal.',
+    desc:'School website for Metro Public School, Meerut — admissions info, campus & facilities showcase, and an enquiry-driven admissions funnel.',
     result:'Live Website',
     link:'https://metro-school-website.onrender.com/',
   },
   {
-    cat:'Coaching & EdTech', icon:'📚', name:'Prashasti IAS',
+    cat:'Education', icon:'🗂️', name:'Metro Public School — ERP System',
+    tech:['PHP','MySQL','Admin Dashboard'],
+    desc:'Full school management ERP for staff — student records, attendance, timetable, homework, exams & results, fee collection, and expense tracking, all in one admin panel.',
+    result:'Live System',
+    link:'https://metroschoolerp.infinityfreeapp.com/erp/admin/index.php',
+  },
+  {
+    cat:'Coaching & EdTech', icon:'📚', name:'Prashasti IAS Academy',
     tech:['Web Design','SEO','Content-Driven'],
-    desc:'Coaching institute website for UPSC/IAS exam preparation — course listings, faculty profiles, results showcase, and lead capture forms.',
+    desc:'Coaching institute website for UPSC/IAS & UP-PCS exam preparation in Meerut — courses, faculty, results, study material, and a lead capture enquiry system.',
     result:'Live Website',
     link:'https://www.prashastiias.com/',
   },
   {
     cat:'Manufacturing', icon:'🏭', name:'Arhant Metal Industries',
     tech:['Business Website','Product Catalog'],
-    desc:'Corporate website for a metal manufacturing company — product catalog, company profile, certifications, and enquiry-driven lead generation.',
+    desc:'Corporate website for a transformer insulation materials manufacturer (est. 1989) — product catalog, company profile, and pan-India enquiry generation.',
     result:'Live Website',
     link:'https://arhantmetalindusties.in/',
   },
   {
-    cat:'Food & Beverage', icon:'🥐', name:'Reliable Bakery',
-    tech:['React','Netlify','E-Commerce'],
-    desc:'Bakery brand website showcasing product menu with an inviting, appetite-driving visual layout built for fast deployment.',
+    cat:'Real Estate & Interiors', icon:'🛋️', name:'Irtivas Design Studio',
+    tech:['React','Netlify','Portfolio Showcase'],
+    desc:'Premium interior design & real estate styling studio website based in Noida — project portfolio, service overview, and quote-request lead capture.',
     result:'Live Website',
     link:'https://reliable-queijadas-4fc1d2.netlify.app/',
   },
   {
     cat:'Food & Beverage', icon:'🍔', name:'CPR Foodies',
-    tech:['React','Vercel','Menu Ordering'],
-    desc:'Restaurant/food ordering website with digital menu browsing and a clean, mobile-first ordering experience.',
+    tech:['React','Vercel','Menu & Reservations'],
+    desc:'Multi-cuisine restaurant website (Indian, Chinese, Continental, Fast Food) with digital menu, table reservations, and online ordering.',
     result:'Live Website',
     link:'https://cpr-foodies.vercel.app/',
   },
   {
-    cat:'Web App', icon:'🧩', name:'Custom Business Web App',
-    tech:['React','Node.js','REST API'],
-    desc:'Custom internal web application built for streamlined business operations, currently in active development and testing.',
-    result:'In Development',
+    cat:'E-Commerce', icon:'🏃', name:'Velocity Sports',
+    tech:['React','E-Commerce','Cart & Checkout'],
+    desc:'Sports & fitness e-commerce store — running shoes, gym equipment, apparel, and yoga & recovery gear, with category browsing and cart checkout.',
+    result:'Live Website',
     link:'https://4jsl9kph-8000.inc1.devtunnels.ms/',
   },
   {
@@ -68,9 +75,9 @@ const PROJECTS = [
 const CATS = ['All', ...new Set(PROJECTS.map(p => p.cat))];
 
 const PORTFOLIO_FAQS = [
-  { q:'Can I see examples of your previous work?', a:'Yes, this portfolio page showcases real projects we\'ve built across education, coaching, manufacturing, food & beverage, and internal SaaS tools.' },
+  { q:'Can I see examples of your previous work?', a:'Yes, this portfolio page showcases real projects we\'ve built across education, coaching, manufacturing, real estate, food & beverage, e-commerce, and internal SaaS tools.' },
   { q:'Do you build custom internal tools, not just websites?', a:'Yes. Alongside client websites, we also build internal tools like lead generation systems and CRM platforms tailored to how a business actually operates.' },
-  { q:'Have you worked with businesses in my industry?', a:'We\'ve delivered projects across education, coaching institutes, manufacturing, and food & beverage. If your industry isn\'t listed, we\'re happy to discuss your specific needs.' },
+  { q:'Have you worked with businesses in my industry?', a:'We\'ve delivered projects across education, coaching institutes, manufacturing, interior design & real estate, food & beverage, and e-commerce. If your industry isn\'t listed, we\'re happy to discuss your specific needs.' },
 ];
 
 export default function Portfolio({ onOpenPopup }) {
@@ -82,7 +89,7 @@ export default function Portfolio({ onOpenPopup }) {
     <div className="page">
       <SEO
         title="Portfolio — Our Featured Projects"
-        description="See real projects delivered by Divine Stack Technologies across education, coaching, manufacturing, food & beverage, and in-house SaaS tools."
+        description="See real projects delivered by Divine Stack Technologies across education, coaching, manufacturing, real estate, food & beverage, e-commerce, and in-house SaaS tools."
         path="/portfolio"
         breadcrumbs={[{name:'Home',path:'/'},{name:'Portfolio',path:'/portfolio'}]}
         schema={[getFAQSchema(PORTFOLIO_FAQS)]}
