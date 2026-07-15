@@ -1,0 +1,48 @@
+/* src/styles/WhatsAppButton.css */
+
+.whatsapp-fab {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 999;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(37, 211, 102, 0.45);
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.whatsapp-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.6);
+}
+
+.whatsapp-fab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #25D366;
+  animation: whatsapp-pulse 2.4s ease-out infinite;
+  z-index: -1;
+}
+
+@keyframes whatsapp-pulse {
+  0%   { transform: scale(1);   opacity: .6; }
+  100% { transform: scale(1.8); opacity: 0;  }
+}
+
+@media (max-width: 640px) {
+  .whatsapp-fab {
+    bottom: 18px;
+    left: 18px;
+    width: 52px;
+    height: 52px;
+  }
+}

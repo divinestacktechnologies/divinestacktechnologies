@@ -6,6 +6,7 @@ import CircuitCanvas  from './components/CircuitCanvas';
 import Navbar         from './components/Navbar';
 import Footer         from './components/Footer';
 import EnquiryPopup   from './components/EnquiryPopup';
+import WhatsAppButton from './components/WhatsAppButton';
 import Home           from './pages/Home';
 import Services       from './pages/Services';
 import About          from './pages/About';
@@ -84,6 +85,9 @@ function AppContent() {
 
       {/* Global Enquiry Popup — never on /admin */}
       {popupOpen && !isAdminPage && <EnquiryPopup onClose={closePopup} />}
+
+      {/* WhatsApp Chat Button — never on /admin */}
+      {!isAdminPage && <WhatsAppButton />}
     </>
   );
 }
