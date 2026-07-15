@@ -4,7 +4,7 @@
 
 require('dotenv').config();
 const bcrypt   = require('bcryptjs');
-const { Pool } = require('pg');
+const pool     = require('./db'); // shared pool — supports DATABASE_URL or DB_* vars
 const readline = require('readline');
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -13,15 +13,6 @@ const ask = (q) => new Promise(resolve => rl.question(q, resolve));
 async function main() {
   console.log('\n🚀 Divine Stack Technologies — Admin Setup\n');
   console.log('━'.repeat(45));
-
-  const pool = new Pool({
-    host:     process.env.DB_HOST     || 'localhost',
-    port:     process.env.DB_PORT     || 5432,
-    user:     process.env.DB_USER     || 'postgres',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME     || 'divine_stack_db',
-    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-  });
 
   try {
     await pool.query('SELECT 1');

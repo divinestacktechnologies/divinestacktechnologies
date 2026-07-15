@@ -471,4 +471,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success:false, message:'Internal server error' });
 });
 
-app.listen(PORT, () => console.log(`🚀 Divine Stack API on http://localhost:${PORT}`));
+// ── Auto-migrate then start server ──────────────────────────────
+// Applies schema.sql on every boot (safe/idempotent). This means the
+// database schema is set up automatically even on hosts with no Shell
+// access (e.g. Render's free tier) — no manual `psql -f schema.sql` needed.
+const migrate        = require('./migrate');
+const bootstrapAdmin  = require('./bootstrap-admin');
+migrate()
+  .catch(err => console.error('⚠️  Schema migration skipped/failed:', err.message))
+  .then(() => bootstrapAdmin())
+  .catch(err => console.error('⚠️  Admin bootstrap skipped/failed:', err.message))
+  .finally(() => {
+    app.listen(PORT, () => console.log(`🚀 Divine Stack API on http://localhost:${PORT}`));
+  });

@@ -28,9 +28,11 @@ Divine Stack Technologies ki official website + admin panel. Frontend React (CRA
 dst-fullstack/
 ├── backend/
 │   ├── server.js          # Express app + all API routes
-│   ├── db.js               # PostgreSQL connection pool
+│   ├── db.js               # PostgreSQL connection pool (DATABASE_URL or DB_* vars)
+│   ├── migrate.js          # Auto-applies schema.sql on every boot (idempotent)
+│   ├── bootstrap-admin.js  # Auto-creates first admin from ADMIN_* env vars (no-shell hosts)
 │   ├── schema.sql          # Database schema
-│   ├── setup-admin.js      # CLI script to create first admin user
+│   ├── setup-admin.js      # Interactive CLI script to create an admin (needs Shell)
 │   ├── .env.example        # Sample environment variables
 │   └── package.json
 │
@@ -67,11 +69,16 @@ Pehle database banao (ek baar):
 createdb divine_stack_db
 # ya psql ke andar: CREATE DATABASE divine_stack_db;
 ```
-Fir schema import karo:
-```bash
-psql -U postgres -d divine_stack_db -f backend/schema.sql
-```
-Ye 3 tables banayega: `enquiries`, `admin_users`, `token_blacklist` (saath mein enum types aur `updated_at` auto-update triggers).
+
+**Schema apply karne ke 2 tareeke:**
+
+- **Local / Shell access available**: seedha psql se run karo:
+  ```bash
+  psql -U postgres -d divine_stack_db -f backend/schema.sql
+  ```
+- **No Shell access (e.g. Render free tier)**: kuch bhi manually run karne ki zaroorat nahi — `server.js` startup pe **khud** `schema.sql` apply kar leta hai (`migrate.js` ke through). Ye safe hai kyunki har statement `IF NOT EXISTS` use karta hai, isliye dobara-dobara run hone se bhi kuch nahi tootega. Bas backend deploy karo, schema apne aap ban jayega.
+
+Dono cases mein 3 tables banti hain: `enquiries`, `admin_users`, `token_blacklist` (saath mein enum types aur `updated_at` auto-update triggers).
 
 ### 3. Backend setup
 ```bash
@@ -79,7 +86,9 @@ cd backend
 npm install
 cp .env.example .env
 ```
-`.env` file open karke apni PostgreSQL credentials aur JWT secret set karo:
+`.env` file open karke apni PostgreSQL credentials aur JWT secret set karo.
+
+**Local development** (individual fields):
 ```env
 DB_HOST=localhost
 DB_PORT=5432
@@ -96,15 +105,39 @@ JWT_EXPIRES=8h
 
 FRONTEND_URL=http://localhost:3000
 ```
-`DB_SSL=true` set karo jab kisi managed Postgres provider (Render, Railway, Aiven, etc.) se connect karo.
 
-Pehla admin user banane ke liye:
+**Deployment (Render, Railway, etc.)** — inn providers ek hi connection string dete hain, use `DATABASE_URL` mein daal do (ye individual `DB_*` fields se priority leta hai):
+```env
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+PORT=5000
+NODE_ENV=production
+JWT_SECRET=change_this_to_a_long_random_string
+JWT_EXPIRES=8h
+FRONTEND_URL=https://your-frontend-url.com
+```
+`JWT_SECRET` generate karne ke liye:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+### 4. Pehla admin user banao
+
+**Shell access available** (local ya paid Render plan):
 ```bash
 npm run setup-admin
 ```
-(Ye interactively naam, username, email, password aur role poochega.)
+(Interactively naam, username, email, password aur role poochega.)
 
-Backend server start karo:
+**No Shell access (Render free tier)**: `setup-admin.js` interactive hai, isliye shell ke bina run nahi ho sakta. Iske bajaye, deploy se pehle in 4 env vars ko host ke Environment settings mein daal do:
+```env
+ADMIN_USERNAME=admin
+ADMIN_EMAIL=admin@example.com
+ADMIN_FULL_NAME=Super Admin
+ADMIN_PASSWORD=ek_strong_password_yahan
+```
+Server startup pe khud check karega — agar `admin_users` table khali hai aur ye 4 vars set hain, toh ye admin **automatically** ban jayega. Login confirm hone ke baad in 4 vars ko env settings se **hata dena** (security ke liye, password plaintext env mein permanently rehna theek nahi).
+
+### 5. Backend server start karo
 ```bash
 npm run dev      # nodemon ke saath (development)
 # ya
@@ -112,7 +145,7 @@ npm start        # production
 ```
 Server `http://localhost:5000` par chalega. Health check: `GET /api/health`.
 
-### 4. Frontend setup
+### 6. Frontend setup
 ```bash
 cd ../frontend
 npm install
@@ -132,7 +165,7 @@ App `http://localhost:3000` par khulega.
 ## 🔑 Admin Panel
 
 - URL: `http://localhost:3000/admin`
-- Login credentials wahi honge jo `npm run setup-admin` chalate waqt banaye the.
+- Login credentials wahi honge jo `npm run setup-admin` (shell wale flow) ya `ADMIN_*` env vars (no-shell/auto-bootstrap flow) se bane the.
 - JWT token `localStorage` mein store hota hai (`dst_token`) aur har request ke saath auto-attach hota hai.
 - Token expire/revoke hone par app auto-logout kar deta hai.
 
