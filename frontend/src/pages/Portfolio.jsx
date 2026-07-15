@@ -5,29 +5,72 @@ import SEO from '../components/SEO';
 import FAQ, { getFAQSchema } from '../components/FAQ';
 import '../styles/Portfolio.css';
 
+// Live screenshot preview for projects with a real URL (WordPress mshots — free, no API key)
+const shot = (url) => `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=600`;
+
 const PROJECTS = [
-  { cat:'E-Commerce',  icon:'🛒', name:'ShopNova Platform',     tech:['React','Node.js','MySQL','Stripe'],    desc:'Full-stack e-commerce with AI recommendations, real-time inventory, and Stripe payment integration. 3x conversion rate increase for the client.', result:'3× Conversion Rate' },
-  { cat:'Healthcare',  icon:'🏥', name:'MediConnect App',        tech:['React Native','Firebase','WebRTC'],   desc:'Telemedicine platform connecting patients with doctors. Video consultation, prescriptions, and appointment booking in one app.', result:'10K+ Daily Users' },
-  { cat:'FinTech',     icon:'📊', name:'WealthTracker Dashboard', tech:['React','Python','PostgreSQL','D3.js'],desc:'Real-time investment analytics dashboard with AI-powered insights, portfolio risk analysis, and automated reporting.', result:'₹50Cr+ AUM Tracked' },
-  { cat:'EdTech',      icon:'🏫', name:'LearnSphere LMS',         tech:['Next.js','Node.js','MongoDB'],        desc:'Complete learning management system with live classes, assignments, progress tracking, and gamification features.', result:'25K+ Learners' },
-  { cat:'Automotive',  icon:'🚗', name:'AutoDeal Portal',         tech:['React','Express','MySQL','AWS'],      desc:'Car dealership management system with CRM, inventory tracking, financing calculator, and customer self-service portal.', result:'200+ Dealers Onboarded' },
-  { cat:'Hospitality', icon:'🏨', name:'StayEase Booking',        tech:['React','Node.js','Redis','Stripe'],   desc:'Hotel booking platform with dynamic pricing, loyalty programs, channel manager, and multi-property management dashboard.', result:'₹2Cr+ Monthly Bookings' },
-  { cat:'SaaS',        icon:'⚙️', name:'TaskFlow Pro',            tech:['React','GraphQL','PostgreSQL'],      desc:'Project management SaaS with kanban boards, time tracking, invoicing, and team collaboration features for agencies.', result:'5K+ Active Teams' },
-  { cat:'Real Estate', icon:'🏠', name:'PropFinder Platform',     tech:['Next.js','Node.js','Maps API'],      desc:'Property listing platform with AI-powered valuation, virtual tours, mortgage calculator, and agent CRM integration.', result:'20K+ Property Listings' },
+  {
+    cat:'Education', icon:'🏫', name:'Metro School Website',
+    tech:['React','Node.js','Responsive Design'],
+    desc:'Official school website with admissions info, academics overview, faculty details, and an easy-to-navigate parent/student portal.',
+    result:'Live Website',
+    link:'https://metro-school-website.onrender.com/',
+  },
+  {
+    cat:'Coaching & EdTech', icon:'📚', name:'Prashasti IAS',
+    tech:['Web Design','SEO','Content-Driven'],
+    desc:'Coaching institute website for UPSC/IAS exam preparation — course listings, faculty profiles, results showcase, and lead capture forms.',
+    result:'Live Website',
+    link:'https://www.prashastiias.com/',
+  },
+  {
+    cat:'Manufacturing', icon:'🏭', name:'Arhant Metal Industries',
+    tech:['Business Website','Product Catalog'],
+    desc:'Corporate website for a metal manufacturing company — product catalog, company profile, certifications, and enquiry-driven lead generation.',
+    result:'Live Website',
+    link:'https://arhantmetalindusties.in/',
+  },
+  {
+    cat:'Food & Beverage', icon:'🥐', name:'Reliable Bakery',
+    tech:['React','Netlify','E-Commerce'],
+    desc:'Bakery brand website showcasing product menu with an inviting, appetite-driving visual layout built for fast deployment.',
+    result:'Live Website',
+    link:'https://reliable-queijadas-4fc1d2.netlify.app/',
+  },
+  {
+    cat:'Food & Beverage', icon:'🍔', name:'CPR Foodies',
+    tech:['React','Vercel','Menu Ordering'],
+    desc:'Restaurant/food ordering website with digital menu browsing and a clean, mobile-first ordering experience.',
+    result:'Live Website',
+    link:'https://cpr-foodies.vercel.app/',
+  },
+  {
+    cat:'Web App', icon:'🧩', name:'Custom Business Web App',
+    tech:['React','Node.js','REST API'],
+    desc:'Custom internal web application built for streamlined business operations, currently in active development and testing.',
+    result:'In Development',
+    link:'https://4jsl9kph-8000.inc1.devtunnels.ms/',
+  },
+  {
+    cat:'SaaS Tools', icon:'🎯', name:'Lead Generation Tool',
+    tech:['React','Node.js','PostgreSQL','Automation'],
+    desc:'In-house lead capture and management tool — web forms, popup capture, source tracking, and a dashboard to monitor every enquiry in real time.',
+    result:'Divine Stack Product',
+  },
+  {
+    cat:'SaaS Tools', icon:'🤝', name:'CRM Tool',
+    tech:['React','Node.js','PostgreSQL','JWT Auth'],
+    desc:'Lightweight CRM for managing customer relationships — contact records, status pipelines, admin roles, and activity tracking.',
+    result:'Divine Stack Product',
+  },
 ];
 
 const CATS = ['All', ...new Set(PROJECTS.map(p => p.cat))];
 
-const TESTIMONIALS = [
-  { name:'Amit Kapoor',   co:'ShopNova',         txt:'Divine Stack transformed our online store completely. Sales tripled in 3 months after the new site launched.', stars:5 },
-  { name:'Dr. Ritu Singh', co:'MediConnect',     txt:'Professional team, on-time delivery, and the app quality is exceptional. Our patients love it.', stars:5 },
-  { name:'Vikram Mehta',  co:'WealthTracker',    txt:'The dashboard they built handles complex financial data beautifully. Exactly what we envisioned.', stars:5 },
-];
-
 const PORTFOLIO_FAQS = [
-  { q:'Can I see examples of your previous work?', a:'Yes, this portfolio page showcases 8+ real projects across e-commerce, healthcare, fintech, edtech, automotive, hospitality, SaaS, and real estate industries.' },
-  { q:'Do you have case studies with measurable results?', a:'Yes. For example, our ShopNova e-commerce project achieved a 3x conversion rate increase, and our StayEase booking platform now processes over ₹2 crore in monthly bookings.' },
-  { q:'Have you worked with businesses in my industry?', a:'We have delivered projects across e-commerce, healthcare, fintech, edtech, automotive, hospitality, SaaS, and real estate. If your industry is not listed, we are happy to discuss your specific needs.' },
+  { q:'Can I see examples of your previous work?', a:'Yes, this portfolio page showcases real projects we\'ve built across education, coaching, manufacturing, food & beverage, and internal SaaS tools.' },
+  { q:'Do you build custom internal tools, not just websites?', a:'Yes. Alongside client websites, we also build internal tools like lead generation systems and CRM platforms tailored to how a business actually operates.' },
+  { q:'Have you worked with businesses in my industry?', a:'We\'ve delivered projects across education, coaching institutes, manufacturing, and food & beverage. If your industry isn\'t listed, we\'re happy to discuss your specific needs.' },
 ];
 
 export default function Portfolio({ onOpenPopup }) {
@@ -39,28 +82,10 @@ export default function Portfolio({ onOpenPopup }) {
     <div className="page">
       <SEO
         title="Portfolio — Our Featured Projects"
-        description="See real projects delivered by Divine Stack Technologies across e-commerce, healthcare, fintech, edtech, and more. Proven results for our clients."
+        description="See real projects delivered by Divine Stack Technologies across education, coaching, manufacturing, food & beverage, and in-house SaaS tools."
         path="/portfolio"
         breadcrumbs={[{name:'Home',path:'/'},{name:'Portfolio',path:'/portfolio'}]}
-        schema={[
-          {
-            '@context': 'https://schema.org',
-            '@type': 'Organization',
-            name: 'Divine Stack Technologies',
-            review: TESTIMONIALS.map(t => ({
-              '@type': 'Review',
-              author: { '@type': 'Person', name: t.name },
-              reviewRating: { '@type': 'Rating', ratingValue: t.stars, bestRating: 5 },
-              reviewBody: t.txt,
-            })),
-            aggregateRating: {
-              '@type': 'AggregateRating',
-              ratingValue: '5.0',
-              reviewCount: TESTIMONIALS.length,
-            },
-          },
-          getFAQSchema(PORTFOLIO_FAQS),
-        ]}
+        schema={[getFAQSchema(PORTFOLIO_FAQS)]}
       />
       {/* Hero */}
       <section className="page-hero reveal">
@@ -85,44 +110,34 @@ export default function Portfolio({ onOpenPopup }) {
 
           {/* Grid */}
           <div className="portfolio-grid">
-            {filtered.map(p => (
-              <div className="port-card reveal" key={p.name}>
-                <div className="port-img">
-                  <div className="port-emoji">{p.icon}</div>
-                  <div className="port-result">{p.result}</div>
-                </div>
-                <div className="port-body">
-                  <div className="port-cat">{p.cat}</div>
-                  <h3 className="port-name">{p.name}</h3>
-                  <p className="port-desc">{p.desc}</p>
-                  <div className="port-techs">
-                    {p.tech.map(t => <span className="tag" key={t}>{t}</span>)}
+            {filtered.map(p => {
+              const Card = (
+                <div className="port-card reveal" key={p.name}>
+                  <div className="port-img">
+                    {p.link ? (
+                      <img src={shot(p.link)} alt={p.name} loading="lazy" />
+                    ) : (
+                      <div className="port-emoji">{p.icon}</div>
+                    )}
+                    <div className="port-result">{p.result}</div>
+                    {p.link && <div className="port-visit">Visit Site ↗</div>}
+                  </div>
+                  <div className="port-body">
+                    <div className="port-cat">{p.icon} {p.cat}</div>
+                    <h3 className="port-name">{p.name}</h3>
+                    <p className="port-desc">{p.desc}</p>
+                    <div className="port-techs">
+                      {p.tech.map(t => <span className="tag" key={t}>{t}</span>)}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="section" style={{ background:'var(--dark)' }}>
-        <div className="section-inner">
-          <div className="reveal" style={{ textAlign:'center' }}>
-            <span className="section-tag" style={{ justifyContent:'center' }}>Client Love</span>
-            <h2 className="section-title">What Our <span className="highlight">Clients Say</span></h2>
-          </div>
-          <div className="testimonials-grid">
-            {TESTIMONIALS.map(t => (
-              <div className="card testimonial-card reveal" key={t.name}>
-                <div className="t-stars">{'★'.repeat(t.stars)}</div>
-                <p className="t-text">"{t.txt}"</p>
-                <div className="t-author">
-                  <div className="t-name">{t.name}</div>
-                  <div className="t-co">{t.co}</div>
-                </div>
-              </div>
-            ))}
+              );
+              return p.link ? (
+                <a href={p.link} target="_blank" rel="noopener noreferrer" className="port-link" key={p.name}>
+                  {Card}
+                </a>
+              ) : Card;
+            })}
           </div>
         </div>
       </section>
