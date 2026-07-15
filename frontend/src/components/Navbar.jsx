@@ -28,6 +28,7 @@ export default function Navbar({ onOpenPopup }) {
         <li><NavLink to="/services"  onClick={close}>Services</NavLink></li>
         <li><NavLink to="/about"     onClick={close}>About</NavLink></li>
         <li><NavLink to="/portfolio" onClick={close}>Portfolio</NavLink></li>
+        <li><NavLink to="/blog"      onClick={close}>Blog</NavLink></li>
         <li><NavLink to="/contact"   onClick={close}>Contact</NavLink></li>
         <li>
           <button className="nav-cta" onClick={() => { close(); onOpenPopup(); }}>

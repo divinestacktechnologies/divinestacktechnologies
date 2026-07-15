@@ -11,6 +11,8 @@ import Services       from './pages/Services';
 import About          from './pages/About';
 import Portfolio      from './pages/Portfolio';
 import Contact        from './pages/Contact';
+import Blog           from './pages/Blog';
+import BlogPost       from './pages/BlogPost';
 import Admin          from './pages/Admin';
 import './index.css';
 
@@ -67,6 +69,8 @@ function AppContent() {
           <Route path="/about"     element={<About     onOpenPopup={openPopup} />} />
           <Route path="/portfolio" element={<Portfolio onOpenPopup={openPopup} />} />
           <Route path="/contact"   element={<Contact />} />
+          <Route path="/blog"      element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/admin"     element={<Admin />} />
           <Route path="*"          element={
             <div style={{ minHeight:'80vh', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:'1rem', paddingTop:70 }}>

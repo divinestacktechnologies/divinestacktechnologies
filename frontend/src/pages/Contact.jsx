@@ -61,7 +61,7 @@ export default function Contact() {
             about: {
               '@type': 'Organization',
               name: 'Divine Stack Technologies',
-              email: 'hello@divinestacktechnologies.com',
+              email: 'divinestacktechnologies@gmail.com',
               telephone: '+91-81261-96064',
               address: { '@type': 'PostalAddress', addressLocality: 'Uttar Pradesh', addressCountry: 'IN' },
             },
@@ -90,7 +90,7 @@ export default function Contact() {
             </p>
 
             {[
-              { icon:'📧', label:'Email',    val:'hello@divinestacktechnologies.com', href:'mailto:hello@divinestacktechnologies.com' },
+              { icon:'📧', label:'Email',    val:'divinestacktechnologies@gmail.com', href:'mailto:divinestacktechnologies@gmail.com' },
               { icon:'📞', label:'Phone',    val:'+91 81261 96064', href:'tel:+918126196064' },
               { icon:'📍', label:'Location', val:'Uttar Pradesh, India', href:'#' },
               { icon:'🕐', label:'Hours',    val:'Mon–Sat: 9:00 AM – 7:00 PM IST', href:'#' },

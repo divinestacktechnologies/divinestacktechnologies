@@ -46,10 +46,11 @@ export default function Footer() {
           { title:'Company', links:[
             ['About Us','/about'],
             ['Portfolio','/portfolio'],
+            ['Blog','/blog'],
             ['Contact','/contact'],
           ]},
           { title:'Contact', links:[
-            ['hello@divinestacktech.com','mailto:hello@divinestacktech.com'],
+            ['divinestacktechnologies@gmail.com','mailto:divinestacktechnologies@gmail.com'],
             ['+91 81261 96064','tel:+918126196064'],
             ['Uttar Pradesh, India','#'],
           ]},
