@@ -34,47 +34,61 @@ function Layout({ children, onOpenPopup }) {
   );
 }
 
-export default function App() {
+// Everything that needs route awareness lives here, inside <BrowserRouter>,
+// so useLocation() always reflects the current route (including client-side
+// navigation, not just full page loads).
+function AppContent() {
   const [popupOpen, setPopupOpen] = useState(false);
+  const { pathname } = useLocation();
+  const isAdminPage = pathname.startsWith('/admin');
 
-  // Auto-open popup after 30 seconds — once per session
+  // Auto-open popup after 30 seconds — once per session, never on /admin
   useEffect(() => {
+    if (isAdminPage) return;
     if (sessionStorage.getItem('dst_popup_shown')) return;
     const timer = setTimeout(() => {
       setPopupOpen(true);
       sessionStorage.setItem('dst_popup_shown', '1');
     }, 30000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isAdminPage]);
 
   const openPopup  = () => setPopupOpen(true);
   const closePopup = () => setPopupOpen(false);
 
   return (
+    <>
+      <CircuitCanvas />
+      <ScrollToTop />
+      <Layout onOpenPopup={openPopup}>
+        <Routes>
+          <Route path="/"          element={<Home      onOpenPopup={openPopup} />} />
+          <Route path="/services"  element={<Services  onOpenPopup={openPopup} />} />
+          <Route path="/about"     element={<About     onOpenPopup={openPopup} />} />
+          <Route path="/portfolio" element={<Portfolio onOpenPopup={openPopup} />} />
+          <Route path="/contact"   element={<Contact />} />
+          <Route path="/admin"     element={<Admin />} />
+          <Route path="*"          element={
+            <div style={{ minHeight:'80vh', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:'1rem', paddingTop:70 }}>
+              <div style={{ fontFamily:'Orbitron,sans-serif', fontSize:'5rem', color:'var(--cyan)' }}>404</div>
+              <p style={{ color:'var(--gray)' }}>Page not found.</p>
+              <a href="/" className="btn-primary">← Go Home</a>
+            </div>
+          } />
+        </Routes>
+      </Layout>
+
+      {/* Global Enquiry Popup — never on /admin */}
+      {popupOpen && !isAdminPage && <EnquiryPopup onClose={closePopup} />}
+    </>
+  );
+}
+
+export default function App() {
+  return (
     <HelmetProvider>
       <BrowserRouter>
-        <CircuitCanvas />
-        <ScrollToTop />
-        <Layout onOpenPopup={openPopup}>
-          <Routes>
-            <Route path="/"          element={<Home      onOpenPopup={openPopup} />} />
-            <Route path="/services"  element={<Services  onOpenPopup={openPopup} />} />
-            <Route path="/about"     element={<About     onOpenPopup={openPopup} />} />
-            <Route path="/portfolio" element={<Portfolio onOpenPopup={openPopup} />} />
-            <Route path="/contact"   element={<Contact />} />
-            <Route path="/admin"     element={<Admin />} />
-            <Route path="*"          element={
-              <div style={{ minHeight:'80vh', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:'1rem', paddingTop:70 }}>
-                <div style={{ fontFamily:'Orbitron,sans-serif', fontSize:'5rem', color:'var(--cyan)' }}>404</div>
-                <p style={{ color:'var(--gray)' }}>Page not found.</p>
-                <a href="/" className="btn-primary">← Go Home</a>
-              </div>
-            } />
-          </Routes>
-        </Layout>
-
-        {/* Global Enquiry Popup */}
-        {popupOpen && <EnquiryPopup onClose={closePopup} />}
+        <AppContent />
       </BrowserRouter>
     </HelmetProvider>
   );
