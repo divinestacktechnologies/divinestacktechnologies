@@ -55,8 +55,7 @@ const PROJECTS = [
     cat:'E-Commerce', icon:'🏃', name:'Velocity Sports',
     tech:['React','E-Commerce','Cart & Checkout'],
     desc:'Sports & fitness e-commerce store — running shoes, gym equipment, apparel, and yoga & recovery gear, with category browsing and cart checkout.',
-    result:'Live Website',
-    link:'https://4jsl9kph-8000.inc1.devtunnels.ms/',
+    image:'/portfolio/velocity-sports.jpg',
   },
   {
     cat:'SaaS Tools', icon:'🎯', name:'Lead Generation Tool',
@@ -121,12 +120,14 @@ export default function Portfolio({ onOpenPopup }) {
               const Card = (
                 <div className="port-card reveal" key={p.name}>
                   <div className="port-img">
-                    {p.link ? (
+                    {p.image ? (
+                      <img src={p.image} alt={p.name} loading="lazy" />
+                    ) : p.link ? (
                       <img src={shot(p.link)} alt={p.name} loading="lazy" />
                     ) : (
                       <div className="port-emoji">{p.icon}</div>
                     )}
-                    <div className="port-result">{p.result}</div>
+                    {p.result && <div className="port-result">{p.result}</div>}
                     {p.link && <div className="port-visit">Visit Site ↗</div>}
                   </div>
                   <div className="port-body">
