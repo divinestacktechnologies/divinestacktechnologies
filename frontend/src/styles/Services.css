@@ -72,9 +72,11 @@
 /* Process steps */
 .process-steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.5rem; margin-top: 1rem;
 }
+@media (min-width: 641px)  { .process-steps { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1025px) { .process-steps { grid-template-columns: repeat(4, 1fr); } }
 .process-step { text-align: center; }
 .step-num {
   font-family: 'Orbitron', sans-serif;

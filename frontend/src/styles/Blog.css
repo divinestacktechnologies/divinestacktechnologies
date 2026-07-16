@@ -2,9 +2,11 @@
 
 .blog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.75rem;
 }
+@media (min-width: 641px)  { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1025px) { .blog-grid { grid-template-columns: repeat(3, 1fr); } }
 
 .blog-card {
   display: block;
@@ -120,7 +122,6 @@
 
 /* Responsive: prevent minmax() floor from overflowing narrow phones (< ~360px) */
 @media (max-width: 480px) {
-  .blog-grid { grid-template-columns: 1fr; }
   .blog-card { padding: 1.4rem; }
   .blog-post-title { font-size: 1.5rem; }
   .blog-post-body p,

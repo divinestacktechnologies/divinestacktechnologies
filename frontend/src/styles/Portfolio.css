@@ -15,9 +15,11 @@
 
 .portfolio-grid {
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  grid-template-columns: 1fr;
   gap:1.5rem;
 }
+@media (min-width: 641px)  { .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1025px) { .portfolio-grid { grid-template-columns: repeat(3, 1fr); } }
 .port-card {
   border-radius:16px; overflow:hidden;
   border:1px solid rgba(0,212,255,.18);
@@ -64,21 +66,18 @@
 
 /* Testimonials */
 .testimonials-grid {
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  display:grid; grid-template-columns: 1fr;
   gap:1.5rem; margin-top:1rem;
 }
+@media (min-width: 641px)  { .testimonials-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1025px) { .testimonials-grid { grid-template-columns: repeat(3, 1fr); } }
 .testimonial-card { }
 .t-stars { color:#FCD34D; font-size:1.1rem; margin-bottom:.8rem; letter-spacing:2px; }
 .t-text { color:#D1D5DB; font-size:.95rem; line-height:1.8; margin-bottom:1.2rem; font-style:italic; }
 .t-name { font-weight:600; font-size:.95rem; }
 .t-co   { font-size:.8rem; color:#00D4FF; margin-top:2px; }
 
-/* Responsive: prevent minmax() floor from overflowing narrow phones (< ~360px) */
 @media (max-width: 480px) {
-  .portfolio-grid,
-  .testimonials-grid {
-    grid-template-columns: 1fr;
-  }
   .port-img { height: 160px; }
   .port-body { padding: 1.25rem; }
   .filter-tabs { gap: 8px; }
