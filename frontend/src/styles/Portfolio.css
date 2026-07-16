@@ -72,3 +72,15 @@
 .t-text { color:#D1D5DB; font-size:.95rem; line-height:1.8; margin-bottom:1.2rem; font-style:italic; }
 .t-name { font-weight:600; font-size:.95rem; }
 .t-co   { font-size:.8rem; color:#00D4FF; margin-top:2px; }
+
+/* Responsive: prevent minmax() floor from overflowing narrow phones (< ~360px) */
+@media (max-width: 480px) {
+  .portfolio-grid,
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+  .port-img { height: 160px; }
+  .port-body { padding: 1.25rem; }
+  .filter-tabs { gap: 8px; }
+  .filter-tab { padding: 7px 14px; font-size: .8rem; }
+}

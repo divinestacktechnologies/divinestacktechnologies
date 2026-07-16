@@ -117,3 +117,12 @@
   font-size: 1.2rem;
   margin-bottom: 1.5rem;
 }
+
+/* Responsive: prevent minmax() floor from overflowing narrow phones (< ~360px) */
+@media (max-width: 480px) {
+  .blog-grid { grid-template-columns: 1fr; }
+  .blog-card { padding: 1.4rem; }
+  .blog-post-title { font-size: 1.5rem; }
+  .blog-post-body p,
+  .blog-post-body li { font-size: .95rem; }
+}
