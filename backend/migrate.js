@@ -16,6 +16,15 @@ async function migrate() {
   console.log('🔧 Applying database schema...');
   await pool.query(sql);
   console.log('✅ Schema applied (tables already existing were left untouched).');
+
+  // For databases created before 'chatbot' was added as a valid enquiry source,
+  // add the missing enum value. Must run as its own standalone statement
+  // (ALTER TYPE ... ADD VALUE cannot run in the same multi-statement batch above).
+  try {
+    await pool.query(`ALTER TYPE enquiry_source ADD VALUE IF NOT EXISTS 'chatbot'`);
+  } catch (err) {
+    console.log('ℹ️  enquiry_source enum already up to date:', err.message);
+  }
 }
 
 module.exports = migrate;

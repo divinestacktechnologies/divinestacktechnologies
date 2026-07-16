@@ -251,6 +251,7 @@ function Dashboard({ addToast }) {
           { label:'This Week',   val:t.this_week||0,   color:'#ec4899', icon:'📆' },
           { label:'Via Popup',   val:t.from_popup||0,  color:'#f97316', icon:'💬' },
           { label:'Contact Form',val:t.from_contact||0,color:'#06b6d4', icon:'📝' },
+          { label:'Via Chatbot', val:t.from_chatbot||0,color:'#25D366', icon:'🤖' },
         ].map(s => (
           <div className="a-stat-card" key={s.label}>
             <div style={{fontSize:'1.5rem',marginBottom:'.4rem'}}>{s.icon}</div>
@@ -361,6 +362,7 @@ function EnquiriesPage({ addToast }) {
           <option value="">All Sources</option>
           <option value="popup">Popup</option>
           <option value="contact">Contact Form</option>
+          <option value="chatbot">Chatbot</option>
         </select>
       </div>
 

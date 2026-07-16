@@ -110,7 +110,7 @@ app.post('/api/enquiries', publicLimiter,
   body('service').optional().trim().isLength({ max:80 }),
   body('budget').optional().trim().isLength({ max:60 }),
   body('message').optional().trim().isLength({ max:2000 }),
-  body('source').optional().isIn(['popup','contact']),
+  body('source').optional().isIn(['popup','contact','chatbot']),
   validate,
   async (req, res) => {
     const { full_name, email, phone=null, service=null, budget=null, message=null, source='contact' } = req.body;
@@ -356,6 +356,7 @@ app.get('/api/admin/stats', adminLimiter, requireAuth, async (req, res) => {
         COUNT(*) FILTER (WHERE status = 'closed')                                  AS closed,
         COUNT(*) FILTER (WHERE source = 'popup')                                   AS from_popup,
         COUNT(*) FILTER (WHERE source = 'contact')                                 AS from_contact,
+        COUNT(*) FILTER (WHERE source = 'chatbot')                                 AS from_chatbot,
         COUNT(*) FILTER (WHERE DATE(created_at) = CURRENT_DATE)                    AS today,
         COUNT(*) FILTER (WHERE DATE_TRUNC('week', created_at) = DATE_TRUNC('week', NOW())) AS this_week
       FROM enquiries`);

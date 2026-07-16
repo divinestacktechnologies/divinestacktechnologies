@@ -7,6 +7,7 @@ import Navbar         from './components/Navbar';
 import Footer         from './components/Footer';
 import EnquiryPopup   from './components/EnquiryPopup';
 import WhatsAppButton from './components/WhatsAppButton';
+import ChatBot        from './components/ChatBot';
 import Home           from './pages/Home';
 import Services       from './pages/Services';
 import About          from './pages/About';
@@ -88,6 +89,9 @@ function AppContent() {
 
       {/* WhatsApp Chat Button — never on /admin */}
       {!isAdminPage && <WhatsAppButton />}
+
+      {/* Rule-based FAQ Chatbot — never on /admin */}
+      {!isAdminPage && <ChatBot />}
     </>
   );
 }

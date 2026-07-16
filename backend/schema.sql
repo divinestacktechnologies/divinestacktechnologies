@@ -11,7 +11,7 @@
 
 -- ─── Enum Types ──────────────────────────────────────────────
 DO $$ BEGIN
-  CREATE TYPE enquiry_source AS ENUM ('popup', 'contact');
+  CREATE TYPE enquiry_source AS ENUM ('popup', 'contact', 'chatbot');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
