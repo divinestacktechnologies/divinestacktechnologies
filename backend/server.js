@@ -21,9 +21,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CORS — allow React dev + file:// for standalone admin HTML
+// FRONTEND_URL can be a single URL or a comma-separated list of URLs
+// (useful when the site is reachable via multiple domains, e.g. .com + .in + onrender.com)
 app.use((req, res, next) => {
+  const configured = (process.env.FRONTEND_URL || '')
+    .split(',')
+    .map(u => u.trim())
+    .filter(Boolean);
   const allowed = [
-    process.env.FRONTEND_URL || 'http://localhost:3000',
+    ...configured,
     'http://localhost:3000',
     'http://127.0.0.1:3000',
   ];
