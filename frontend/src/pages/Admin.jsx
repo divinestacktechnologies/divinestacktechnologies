@@ -222,12 +222,35 @@ function ProfilePage({ admin, onUpdate, addToast }) {
 }
 
 /* DASHBOARD */
-function Dashboard({ addToast }) {
+function Dashboard({ addToast, onViewAll }) {
   const [stats, setStats]   = useState(null);
   const [loading, setLoading] = useState(true);
+  const [recent, setRecent] = useState([]);
+  const [recentLoading, setRecentLoading] = useState(true);
+
   useEffect(() => {
     getStats().then(r=>setStats(r.data.data)).catch(()=>addToast('Failed to load stats','error')).finally(()=>setLoading(false));
   }, [addToast]);
+
+  const loadRecent = useCallback(() => {
+    setRecentLoading(true);
+    getEnquiries({ page:1, limit:5, sort:'created_at', order:'DESC' })
+      .then(r=>setRecent(r.data.data))
+      .catch(()=>addToast('Failed to load recent enquiries','error'))
+      .finally(()=>setRecentLoading(false));
+  }, [addToast]);
+
+  useEffect(() => { loadRecent(); }, [loadRecent]);
+
+  const removeRecent = async (id, e) => {
+    e.stopPropagation();
+    if (!window.confirm('Delete this enquiry permanently?')) return;
+    try {
+      await deleteEnquiry(id);
+      setRecent(r => r.filter(x => x.id !== id));
+      addToast('Deleted','success');
+    } catch { addToast('Failed to delete','error'); }
+  };
 
   if (loading) return <div className="a-content"><p style={{color:'#9CA3AF'}}>Loading...</p></div>;
   if (!stats)  return <div className="a-content"><p style={{color:'#f87171'}}>Failed to load</p></div>;
@@ -248,7 +271,6 @@ function Dashboard({ addToast }) {
           { label:'This Week',   val:t.this_week||0,   color:'#ec4899', icon:'📆' },
           { label:'Via Popup',   val:t.from_popup||0,  color:'#f97316', icon:'💬' },
           { label:'Contact Form',val:t.from_contact||0,color:'#06b6d4', icon:'📝' },
-          { label:'Via Chatbot', val:t.from_chatbot||0,color:'#25D366', icon:'🤖' },
         ].map(s => (
           <div className="a-stat-card" key={s.label}>
             <div style={{fontSize:'1.5rem',marginBottom:'.4rem'}}>{s.icon}</div>
@@ -258,6 +280,42 @@ function Dashboard({ addToast }) {
             <div style={{fontSize:'.78rem',color:'#9CA3AF',marginTop:'.3rem'}}>{s.label}</div>
           </div>
         ))}
+      </div>
+
+      <div className="a-card" style={{marginTop:'1.5rem'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.2rem',flexWrap:'wrap',gap:'.8rem'}}>
+          <h3 style={{fontFamily:'Orbitron,sans-serif',fontSize:'.9rem',color:'#00D4FF',margin:0}}>
+            Recent Enquiries
+          </h3>
+          <button className="btn-outline" style={{padding:'6px 14px',fontSize:'.8rem'}} onClick={onViewAll}>
+            View All →
+          </button>
+        </div>
+        {recentLoading ? (
+          <p style={{color:'#9CA3AF',fontSize:'.85rem'}}>Loading...</p>
+        ) : recent.length === 0 ? (
+          <p style={{color:'#6B7280',fontSize:'.85rem'}}>No enquiries yet.</p>
+        ) : (
+          <div className="a-table-wrap">
+            <table className="a-table">
+              <thead>
+                <tr><th>Source</th><th>Name</th><th>Email</th><th>Status</th><th>Date</th><th></th></tr>
+              </thead>
+              <tbody>
+                {recent.map(r => (
+                  <tr key={r.id}>
+                    <td><span className={`a-badge a-badge--${r.source}`}>{r.source}</span></td>
+                    <td style={{fontWeight:500}}>{r.full_name}</td>
+                    <td style={{color:'#9CA3AF',fontSize:'.83rem'}}>{r.email}</td>
+                    <td style={{color:STATUS_COLOR[r.status],fontSize:'.83rem'}}>{STATUS_LABEL[r.status]}</td>
+                    <td style={{fontSize:'.8rem',color:'#9CA3AF'}}>{fmt(r.created_at)}</td>
+                    <td><button className="a-del-btn" onClick={e=>removeRecent(r.id,e)} title="Delete">🗑</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {stats.byService.length > 0 && (
@@ -802,7 +860,7 @@ export default function Admin() {
           <div/>
         </div>
 
-        {tab==='dashboard' && <Dashboard addToast={addToast} />}
+        {tab==='dashboard' && <Dashboard addToast={addToast} onViewAll={()=>setTab('enquiries')} />}
         {tab==='enquiries' && <EnquiriesPage addToast={addToast} />}
         {tab==='profile'   && <ProfilePage admin={admin} onUpdate={setAdmin} addToast={addToast} />}
         {tab==='users' && admin.role==='super_admin' && <UsersPage currentAdmin={admin} addToast={addToast} />}
