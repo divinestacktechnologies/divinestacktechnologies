@@ -84,9 +84,6 @@ function LoginScreen({ onLogin }) {
             {loading ? '⏳ Logging in...' : '🔐 Login'}
           </button>
         </form>
-        <p style={{ color:'#4B5563', fontSize:'.75rem', textAlign:'center', marginTop:'1.5rem' }}>
-          First time? Run <code style={{color:'#00D4FF'}}>node setup-admin.js</code> in backend folder
-        </p>
       </div>
     </div>
   );
@@ -340,11 +337,55 @@ function EnquiriesPage({ addToast }) {
     } catch { addToast('Failed to delete','error'); }
   };
 
+  const [exporting, setExporting] = useState(false);
+  const exportToExcel = async () => {
+    setExporting(true);
+    try {
+      // Fetch ALL enquiries matching current filters (not just current page)
+      const { page, limit, ...rest } = filters;
+      const r = await getEnquiries({ ...rest, page: 1, limit: 10000 });
+      const all = r.data.data;
+
+      if (!all.length) { addToast('No enquiries to export','error'); return; }
+
+      const headers = ['ID','Source','Full Name','Email','Phone','Service','Budget','Message','Status','Date'];
+      const escapeCsv = (val) => {
+        const s = (val ?? '').toString().replace(/"/g, '""');
+        return /[",\n]/.test(s) ? `"${s}"` : s;
+      };
+      const csvRows = all.map(r => [
+        r.id, r.source, r.full_name, r.email, r.phone || '', r.service || '',
+        r.budget || '', r.message || '', STATUS_LABEL[r.status] || r.status, fmt(r.created_at),
+      ].map(escapeCsv).join(','));
+
+      const csv = '\uFEFF' + [headers.join(','), ...csvRows].join('\r\n'); // BOM for Excel UTF-8 compatibility
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `enquiries_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      addToast(`Exported ${all.length} enquiries`,'success');
+    } catch {
+      addToast('Export failed','error');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="a-content">
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.5rem',flexWrap:'wrap',gap:'1rem'}}>
         <h2 className="a-page-title" style={{margin:0}}>Enquiries</h2>
-        <button className="btn-outline" style={{padding:'8px 16px',fontSize:'.85rem'}} onClick={()=>fetchData(filters)}>⟳ Refresh</button>
+        <div style={{display:'flex',gap:10}}>
+          <button className="btn-outline" style={{padding:'8px 16px',fontSize:'.85rem'}} onClick={exportToExcel} disabled={exporting}>
+            {exporting ? '⏳ Exporting...' : '📊 Export to Excel'}
+          </button>
+          <button className="btn-outline" style={{padding:'8px 16px',fontSize:'.85rem'}} onClick={()=>fetchData(filters)}>⟳ Refresh</button>
+        </div>
       </div>
 
       <div style={{display:'flex',gap:10,marginBottom:'1.2rem',flexWrap:'wrap'}}>
@@ -362,7 +403,6 @@ function EnquiriesPage({ addToast }) {
           <option value="">All Sources</option>
           <option value="popup">Popup</option>
           <option value="contact">Contact Form</option>
-          <option value="chatbot">Chatbot</option>
         </select>
       </div>
 
