@@ -54,8 +54,8 @@ export default function Home({ onOpenPopup }) {
             '@context': 'https://schema.org',
             '@type': 'LocalBusiness',
             name: 'Divine Stack Technologies',
-            image: 'https://divinestacktechnologies.in/og-image.jpg',
-            url: 'https://divinestacktechnologies.in',
+            image: 'https://divinestacktechnologies.com/og-image.jpg',
+            url: 'https://divinestacktechnologies.com',
             telephone: '+91-81261-96064',
             address: {
               '@type': 'PostalAddress',

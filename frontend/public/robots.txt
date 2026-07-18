@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: https://divinestacktechnologies.in/sitemap.xml
+Sitemap: https://divinestacktechnologies.com/sitemap.xml

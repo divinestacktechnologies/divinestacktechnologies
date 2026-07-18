@@ -3,7 +3,7 @@
 import { Helmet } from 'react-helmet-async';
 
 const SITE_NAME = 'Divine Stack Technologies';
-const SITE_URL  = 'https://divinestacktechnologies.in';
+const SITE_URL  = 'https://divinestacktechnologies.com';
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.jpg`;
 const TWITTER_HANDLE = '@divinestacktech';
 

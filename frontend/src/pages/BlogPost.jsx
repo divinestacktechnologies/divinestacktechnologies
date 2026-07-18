@@ -5,7 +5,7 @@ import SEO from '../components/SEO';
 import blogPosts, { getPostBySlug } from '../data/blogPosts';
 import '../styles/Blog.css';
 
-const SITE_URL = 'https://divinestacktechnologies.in';
+const SITE_URL = 'https://divinestacktechnologies.com';
 
 export default function BlogPost() {
   const { slug } = useParams();

@@ -1,5 +1,6 @@
-/* ── Google Fonts ── */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+/* Google Fonts (Orbitron, Inter) are loaded via optimized <link rel="preconnect"> +
+   <link rel="stylesheet"> tags in public/index.html — NOT here, to avoid a duplicate,
+   render-blocking @import that slows down First/Largest Contentful Paint. */
 
 /* ── Design Tokens ── */
 :root {
