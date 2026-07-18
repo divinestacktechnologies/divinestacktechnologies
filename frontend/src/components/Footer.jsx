@@ -12,7 +12,7 @@ export default function Footer() {
       <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr', gap:'3rem', maxWidth:1200, margin:'0 auto 3rem' }}>
         <div>
           <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-            <img src="/logo.png" alt="Divine Stack Technologies" style={{ width:34, height:34, objectFit:'contain' }} />
+            <img src="/logo-small.png" alt="Divine Stack Technologies" style={{ width:34, height:34, objectFit:'contain' }} />
             <div style={{ fontFamily:'Orbitron,sans-serif', fontSize:'1.35rem', fontWeight:700,
               background:'linear-gradient(90deg,#00D4FF,#2563EB)',
               WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>

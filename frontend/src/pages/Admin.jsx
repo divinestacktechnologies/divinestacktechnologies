@@ -55,7 +55,7 @@ function LoginScreen({ onLogin }) {
     <div className="a-login-wrap">
       <div className="a-login-card">
         <div style={{ textAlign:'center', marginBottom:'2rem' }}>
-          <img src="/logo.png" alt="Divine Stack Technologies" style={{ width:64, height:64, objectFit:'contain', margin:'0 auto .8rem' }} />
+          <img src="/logo-small.png" alt="Divine Stack Technologies" style={{ width:64, height:64, objectFit:'contain', margin:'0 auto .8rem' }} />
           <div style={{ fontFamily:'Orbitron,sans-serif', fontSize:'1.5rem', fontWeight:700,
             background:'linear-gradient(90deg,#00D4FF,#2563EB)',
             WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
@@ -810,7 +810,7 @@ export default function Admin() {
       <aside className={`a-sidebar ${sideOpen?'a-sidebar--open':''}`}>
         <div style={{padding:'1.5rem 1.2rem 1rem',borderBottom:'1px solid rgba(0,212,255,.12)',
           display:'flex',alignItems:'center',gap:10}}>
-          <img src="/logo.png" alt="Divine Stack Technologies" style={{width:32,height:32,objectFit:'contain'}} />
+          <img src="/logo-small.png" alt="Divine Stack Technologies" style={{width:32,height:32,objectFit:'contain'}} />
           <div>
             <div style={{fontFamily:'Orbitron,sans-serif',fontSize:'1.05rem',fontWeight:700,
               background:'linear-gradient(90deg,#00D4FF,#2563EB)',

@@ -19,7 +19,7 @@ export default function Navbar({ onOpenPopup }) {
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="navbar-logo" onClick={() => { navigate('/'); close(); }}>
-        <img src="/logo.png" alt="Divine Stack Technologies" className="navbar-logo-img" />
+        <img src="/logo-small.png" alt="Divine Stack Technologies" className="navbar-logo-img" />
         <span>Divine<em>Stack</em></span>
       </div>
 
