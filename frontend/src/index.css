@@ -18,13 +18,27 @@
 }
 
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
 body {
   font-family: 'Inter', sans-serif;
   background: var(--navy);
   color: var(--white);
   overflow-x: hidden;
   line-height: 1.65;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+}
+#root {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; }
@@ -37,11 +51,11 @@ img { max-width: 100%; }
 }
 
 /* ── Page wrapper ── */
-.page { position: relative; z-index: 1; padding-top: 70px; }
+.page { position: relative; z-index: 1; padding-top: 70px; width: 100%; max-width: 100%; }
 
 /* ── Section ── */
-.section { padding: 90px 5vw; }
-.section-inner { max-width: 1200px; margin: 0 auto; }
+.section { padding: 90px 5vw; width: 100%; max-width: 100%; }
+.section-inner { max-width: 1200px; width: 100%; margin: 0 auto; }
 .section-tag {
   font-family: 'Orbitron', sans-serif;
   font-size: 0.68rem; letter-spacing: 0.22em;
