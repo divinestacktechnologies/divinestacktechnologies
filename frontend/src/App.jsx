@@ -1,5 +1,5 @@
 // src/App.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import CircuitCanvas  from './components/CircuitCanvas';
@@ -8,15 +8,29 @@ import Footer         from './components/Footer';
 import EnquiryPopup   from './components/EnquiryPopup';
 import WhatsAppButton from './components/WhatsAppButton';
 import ChatBot        from './components/ChatBot';
-import Home           from './pages/Home';
-import Services       from './pages/Services';
-import About          from './pages/About';
-import Portfolio      from './pages/Portfolio';
-import Contact        from './pages/Contact';
-import Blog           from './pages/Blog';
-import BlogPost       from './pages/BlogPost';
-import Admin          from './pages/Admin';
+import Home           from './pages/Home'; // eager — this is the primary landing page
 import './index.css';
+
+// Everything else loads on demand (code-splitting) — trims the initial JS bundle
+// significantly, since e.g. the Admin panel's code never needs to be downloaded
+// by a visitor who only looks at the public marketing pages.
+const Services  = lazy(() => import('./pages/Services'));
+const About     = lazy(() => import('./pages/About'));
+const Portfolio = lazy(() => import('./pages/Portfolio'));
+const Contact   = lazy(() => import('./pages/Contact'));
+const Blog      = lazy(() => import('./pages/Blog'));
+const BlogPost  = lazy(() => import('./pages/BlogPost'));
+const Admin     = lazy(() => import('./pages/Admin'));
+
+// Minimal, brand-matching fallback shown while a lazy chunk is downloading
+function RouteLoader() {
+  return (
+    <div style={{ minHeight:'60vh', display:'flex', alignItems:'center', justifyContent:'center', paddingTop:70 }}>
+      <div style={{ width:36, height:36, border:'3px solid rgba(0,212,255,.2)', borderTopColor:'#00D4FF', borderRadius:'50%', animation:'spin .8s linear infinite' }} />
+      <style>{'@keyframes spin{to{transform:rotate(360deg)}}'}</style>
+    </div>
+  );
+}
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -65,23 +79,25 @@ function AppContent() {
       <CircuitCanvas />
       <ScrollToTop />
       <Layout onOpenPopup={openPopup}>
-        <Routes>
-          <Route path="/"          element={<Home      onOpenPopup={openPopup} />} />
-          <Route path="/services"  element={<Services  onOpenPopup={openPopup} />} />
-          <Route path="/about"     element={<About     onOpenPopup={openPopup} />} />
-          <Route path="/portfolio" element={<Portfolio onOpenPopup={openPopup} />} />
-          <Route path="/contact"   element={<Contact />} />
-          <Route path="/blog"      element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/admin"     element={<Admin />} />
-          <Route path="*"          element={
-            <div style={{ minHeight:'80vh', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:'1rem', paddingTop:70 }}>
-              <div style={{ fontFamily:'Orbitron,sans-serif', fontSize:'5rem', color:'var(--cyan)' }}>404</div>
-              <p style={{ color:'var(--gray)' }}>Page not found.</p>
-              <a href="/" className="btn-primary">← Go Home</a>
-            </div>
-          } />
-        </Routes>
+        <Suspense fallback={<RouteLoader />}>
+          <Routes>
+            <Route path="/"          element={<Home      onOpenPopup={openPopup} />} />
+            <Route path="/services"  element={<Services  onOpenPopup={openPopup} />} />
+            <Route path="/about"     element={<About     onOpenPopup={openPopup} />} />
+            <Route path="/portfolio" element={<Portfolio onOpenPopup={openPopup} />} />
+            <Route path="/contact"   element={<Contact />} />
+            <Route path="/blog"      element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/admin"     element={<Admin />} />
+            <Route path="*"          element={
+              <div style={{ minHeight:'80vh', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:'1rem', paddingTop:70 }}>
+                <div style={{ fontFamily:'Orbitron,sans-serif', fontSize:'5rem', color:'var(--cyan)' }}>404</div>
+                <p style={{ color:'var(--gray)' }}>Page not found.</p>
+                <a href="/" className="btn-primary">← Go Home</a>
+              </div>
+            } />
+          </Routes>
+        </Suspense>
       </Layout>
 
       {/* Global Enquiry Popup — never on /admin */}
