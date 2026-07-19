@@ -22,6 +22,39 @@ export default function Footer() {
           <p style={{ color:'var(--gray)', fontSize:'.9rem', lineHeight:1.8, margin:'1rem 0 1.5rem', maxWidth:300 }}>
             Building world-class digital solutions that drive real business results. Your vision, our expertise.
           </p>
+          <div style={{ display:'flex', gap:'12px' }}>
+            {[
+              {
+                name: 'Instagram',
+                href: 'https://www.instagram.com/divinestacktechnologies/',
+                icon: (
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                  </svg>
+                ),
+              },
+              {
+                name: 'X (Twitter)',
+                href: 'https://x.com/divinestacktech',
+                icon: (
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                ),
+              },
+            ].map(s => (
+              <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.name}
+                style={{ width:36, height:36, borderRadius:8,
+                border:'1px solid rgba(0,212,255,.2)',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                color:'var(--gray)', transition:'all .2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor='#00D4FF'; e.currentTarget.style.color='#00D4FF'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(0,212,255,.2)'; e.currentTarget.style.color='var(--gray)'; }}
+              >{s.icon}</a>
+            ))}
+          </div>
         </div>
 
         {[
