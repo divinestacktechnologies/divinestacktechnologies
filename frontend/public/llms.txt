@@ -1,0 +1,35 @@
+# Divine Stack Technologies
+
+> Divine Stack Technologies is a web & app development agency based in Uttar Pradesh, India, delivering custom websites, web applications, mobile apps, UI/UX design, SEO, and in-house SaaS tools (lead generation and CRM) for businesses across education, coaching, manufacturing, real estate, food & beverage, and e-commerce.
+
+Divine Stack Technologies builds full custom solutions (not template/page-builder sites) — the client owns the complete source code, and every project includes a real backend, database, and admin panel where relevant. The team is based in Meerut/Noida, Uttar Pradesh, and works with clients across India.
+
+## Services
+
+- [Web Development](https://divinestacktechnologies.com/services): Custom websites and web applications built with React, Next.js, and Node.js — mobile-first, SEO-optimized, and built to convert.
+- [Mobile App Development](https://divinestacktechnologies.com/services): Native and cross-platform mobile apps for Android and iOS.
+- [UI/UX Design](https://divinestacktechnologies.com/services): Interface and experience design for web and mobile products.
+- [SEO, AEO & GEO](https://divinestacktechnologies.com/services): Search engine optimization plus Answer Engine and Generative Engine optimization — helping sites show up in Google, AI Overviews, and AI assistant answers.
+- [Cloud & DevOps](https://divinestacktechnologies.com/services): Hosting, deployment, and infrastructure setup.
+- [AI & Automation](https://divinestacktechnologies.com/services): Custom AI-powered features and workflow automation.
+
+## Portfolio
+
+- [Portfolio](https://divinestacktechnologies.com/portfolio): Real, live projects delivered for clients — a school website and ERP system, a UPSC/IAS coaching academy site, a metal manufacturing company site, an interior design studio site, a restaurant ordering site, and in-house SaaS tools (Lead Generation Tool, CRM Tool).
+
+## Blog
+
+- [How Much Does Web Development Cost in India in 2026?](https://divinestacktechnologies.com/blog/web-development-cost-india-2026)
+- [Website vs Web App: What Does Your Business Actually Need?](https://divinestacktechnologies.com/blog/website-vs-web-app)
+- [5 Signs Your Business Has Outgrown Excel Sheets and Needs a CRM](https://divinestacktechnologies.com/blog/signs-you-need-custom-crm)
+- [SEO Basics Every Small Business Website Should Have](https://divinestacktechnologies.com/blog/seo-basics-small-business)
+- [How to Choose the Right Web Development Agency: Questions to Ask](https://divinestacktechnologies.com/blog/choosing-web-development-agency)
+
+## Company
+
+- [About Us](https://divinestacktechnologies.com/about): Company background and team.
+- [Contact](https://divinestacktechnologies.com/contact): Email divinestacktechnologies@gmail.com, phone +91 81261 96064, based in Uttar Pradesh, India.
+
+## Optional
+
+- [Sitemap](https://divinestacktechnologies.com/sitemap.xml): Full list of indexable pages.

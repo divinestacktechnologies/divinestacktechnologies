@@ -22,17 +22,6 @@ export default function Footer() {
           <p style={{ color:'var(--gray)', fontSize:'.9rem', lineHeight:1.8, margin:'1rem 0 1.5rem', maxWidth:300 }}>
             Building world-class digital solutions that drive real business results. Your vision, our expertise.
           </p>
-          <div style={{ display:'flex', gap:'12px' }}>
-            {['LinkedIn','Twitter','Instagram','GitHub'].map(s => (
-              <a key={s} href="#!" style={{ width:36, height:36, borderRadius:8,
-                border:'1px solid rgba(0,212,255,.2)',
-                display:'flex', alignItems:'center', justifyContent:'center',
-                fontSize:'.75rem', color:'var(--gray)', transition:'all .2s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor='#00D4FF'; e.currentTarget.style.color='#00D4FF'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(0,212,255,.2)'; e.currentTarget.style.color='var(--gray)'; }}
-              >{s[0]}</a>
-            ))}
-          </div>
         </div>
 
         {[
