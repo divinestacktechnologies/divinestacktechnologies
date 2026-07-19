@@ -1,5 +1,6 @@
 // src/components/Footer.jsx
 import { Link } from 'react-router-dom';
+import '../styles/Footer.css';
 
 export default function Footer() {
   return (
@@ -9,7 +10,7 @@ export default function Footer() {
       borderTop:'1px solid rgba(0,212,255,.15)',
       padding:'4rem 5vw 2rem',
     }}>
-      <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr', gap:'3rem', maxWidth:1200, margin:'0 auto 3rem' }}>
+      <div className="footer-grid">
         <div>
           <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
             <img src="/logo-small.png" alt="Divine Stack Technologies" style={{ width:34, height:34, objectFit:'contain' }} />
@@ -83,14 +84,23 @@ export default function Footer() {
               {col.title}
             </div>
             <ul style={{ listStyle:'none' }}>
-              {col.links.map(([label, href]) => (
-                <li key={label} style={{ marginBottom:'.65rem' }}>
-                  <Link to={href} style={{ color:'var(--gray)', fontSize:'.9rem', transition:'color .2s' }}
-                    onMouseEnter={e => e.currentTarget.style.color='#00D4FF'}
-                    onMouseLeave={e => e.currentTarget.style.color='var(--gray)'}
-                  >{label}</Link>
-                </li>
-              ))}
+              {col.links.map(([label, href]) => {
+                const isExternal = /^(mailto:|tel:|#)/.test(href);
+                const linkStyle = { color:'var(--gray)', fontSize:'.9rem', transition:'color .2s' };
+                const hoverProps = {
+                  onMouseEnter: e => e.currentTarget.style.color = '#00D4FF',
+                  onMouseLeave: e => e.currentTarget.style.color = 'var(--gray)',
+                };
+                return (
+                  <li key={label} style={{ marginBottom:'.65rem' }}>
+                    {isExternal ? (
+                      <a href={href} style={linkStyle} {...hoverProps}>{label}</a>
+                    ) : (
+                      <Link to={href} style={linkStyle} {...hoverProps}>{label}</Link>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         ))}
